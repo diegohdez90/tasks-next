@@ -1,4 +1,18 @@
 import { createServer } from '@graphql-yoga/node';
+import { IResolvers } from '@graphql-tools/utils';
+import ServerlessMysql from 'serverless-mysql';
+
+const db = ServerlessMysql({
+  config: {
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_ROOT_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+  }
+});
+
+// db.connect();
+
 
 const typeDefs = /* GraphQL */ `
   type Query {
@@ -15,8 +29,8 @@ const typeDefs = /* GraphQL */ `
   }
   input TaskInputUpdated {
     id: Int!
-    title: String
-    status: TaskStatus
+    title: String!
+    status: TaskStatus!
   }
   type Task {
     id: Int!
@@ -33,12 +47,21 @@ const typeDefs = /* GraphQL */ `
   }
 `
 
-const resolvers = {
+interface Context {
+  db: ServerlessMysql.ServerlessMysql
+}
+
+const resolvers: IResolvers<any, Context>= {
   Query: {
-    tasks() {
+    async tasks(parent, args, context) {
+      const result = await context.db.query(
+        'SELECT "HELLO WORLD" AS hello_world'
+      )
+      console.log(result);
+      await db.end();
       return [];
     },
-    task() {
+    task(parent, args, context) {
       return null
     },
     users() {
@@ -46,13 +69,13 @@ const resolvers = {
     },
   },
   Mutation: {
-    createTask() {
+    createTask(parent, args, context) {
       return null;
     },
-    updateTask() {
+    updateTask(parent, args, context) {
       return null;
     },
-    deleteTask() {
+    deleteTask(parent, args, context) {
       return null;
     }
   }
@@ -64,6 +87,9 @@ const server = createServer({
     resolvers,
   },
   endpoint: '/api/graphql',
+  context: {
+    db: db
+  }
   // graphiql: false // uncomment to disable GraphiQL
 })
 
