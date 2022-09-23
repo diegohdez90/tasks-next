@@ -6,19 +6,17 @@ const db = ServerlessMysql({
   config: {
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_ROOT_PASSWORD,
+    password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
   }
 });
-
-// db.connect();
 
 
 const typeDefs = /* GraphQL */ `
   type Query {
     users: [User!]!
     tasks(status: TaskStatus): [Task!]!
-    task(id: Int!): Task!
+    task(id: Int!): Task
   }
   enum TaskStatus  {
     active
@@ -29,8 +27,8 @@ const typeDefs = /* GraphQL */ `
   }
   input TaskInputUpdated {
     id: Int!
-    title: String!
-    status: TaskStatus!
+    title: String
+    status: TaskStatus
   }
   type Task {
     id: Int!
@@ -54,11 +52,14 @@ interface Context {
 const resolvers: IResolvers<any, Context>= {
   Query: {
     async tasks(parent, args, context) {
+      console.log(db.getConfig());
+      
+      console.log('getting client', context.db.getClient());
       const result = await context.db.query(
         'SELECT "HELLO WORLD" AS hello_world'
       )
       console.log(result);
-      await db.end();
+      await context.db.end();
       return [];
     },
     task(parent, args, context) {

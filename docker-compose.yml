@@ -14,6 +14,8 @@ services:
       MYSQL_USER: development
       MYSQL_PASSWORD: taskReduxQL
       MYSQL_DATABASE: tasks_redux
+    ports:
+      - 127.0.0.1:3306:3306
 
   adminer:
     image: adminer
