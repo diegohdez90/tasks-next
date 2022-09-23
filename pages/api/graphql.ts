@@ -49,18 +49,47 @@ interface Context {
   db: ServerlessMysql.ServerlessMysql
 }
 
+enum TaskStatus {
+  active = 'active',
+  completed = 'completed'
+}
+
+interface Task {
+  id: number;
+  title: string;
+  task_status: TaskStatus
+}
+
+interface TaskDbRow {
+  id: number;
+  title: string;
+  task_status: TaskStatus
+}
+
+type TasksDbQueryResult = TaskDbRow[];
+
 const resolvers: IResolvers<any, Context>= {
   Query: {
-    async tasks(parent, args, context) {
-      console.log(db.getConfig());
-      
-      console.log('getting client', context.db.getClient());
-      const result = await context.db.query(
-        'SELECT "HELLO WORLD" AS hello_world'
-      )
+    async tasks(parent, args: {
+      status?: TaskStatus
+    }, context): Promise<Task[]> {
+      let query = 'SELECT * FROM tasks';
+      const queryParams = [];
+      const { status } = args;
+      if (status) {
+        query +=  'WHERE task_status=?';
+        queryParams.push(status);
+      }
+      const result = await context.db.query<TasksDbQueryResult>(
+        query, queryParams
+      );
       console.log(result);
       await context.db.end();
-      return [];
+      return result.map(({id, title, task_status}) => ({
+        id,
+        title,
+        task_status
+      }));
     },
     task(parent, args, context) {
       return null
