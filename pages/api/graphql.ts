@@ -1,6 +1,7 @@
 import { createServer } from '@graphql-yoga/node';
 import { IResolvers } from '@graphql-tools/utils';
 import ServerlessMysql from 'serverless-mysql';
+import { OkPacket } from 'mysql';
 
 const db = ServerlessMysql({
   config: {
@@ -57,7 +58,7 @@ enum TaskStatus {
 interface Task {
   id: number;
   title: string;
-  task_status: TaskStatus
+  status: TaskStatus
 }
 
 interface TaskDbRow {
@@ -77,7 +78,7 @@ const resolvers: IResolvers<any, Context>= {
       const queryParams = [];
       const { status } = args;
       if (status) {
-        query +=  'WHERE task_status=?';
+        query +=  ' WHERE task_status=?';
         queryParams.push(status);
       }
       const result = await context.db.query<TasksDbQueryResult>(
@@ -88,7 +89,7 @@ const resolvers: IResolvers<any, Context>= {
       return result.map(({id, title, task_status}) => ({
         id,
         title,
-        task_status
+        status: task_status
       }));
     },
     task(parent, args, context) {
@@ -99,8 +100,21 @@ const resolvers: IResolvers<any, Context>= {
     },
   },
   Mutation: {
-    createTask(parent, args, context) {
-      return null;
+    async createTask(parent, args: {
+      input: {
+        title: string,
+      }
+    }, context): Promise<Task> {
+      const { input } = args;
+      const result = await context.db.query<OkPacket>('INSERT INTO  tasks (title, task_status) VALUES (?, ?)', [
+        input.title,
+        TaskStatus.active
+      ]);
+      return {
+        id: result.insertId,
+        title: args.input.title,
+        status: TaskStatus.active
+      };
     },
     updateTask(parent, args, context) {
       return null;
