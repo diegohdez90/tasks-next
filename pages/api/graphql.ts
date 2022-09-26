@@ -1,4 +1,4 @@
-import { createServer } from '@graphql-yoga/node';
+import { createServer, GraphQLYogaError } from '@graphql-yoga/node';
 import ServerlessMysql from 'serverless-mysql';
 import { OkPacket } from 'mysql';
 import { Resolvers, TaskStatus } from '../../generated/graphql-backend';
@@ -133,8 +133,13 @@ const resolvers: Resolvers<Context>= {
 
       return task;
     },
-    deleteTask(parent, args, context) {
-      return null;
+    async deleteTask(parent, args, context) {
+      const task = await getTaskById(args.id, context.db);
+      if (!task) {
+        throw new GraphQLYogaError('Could not find your data');
+      }
+      await context.db.query('DELETE FROM tasks WHERE id = ?', [args.id]);
+      return task;
     }
   }
 }
