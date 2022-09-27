@@ -1,13 +1,10 @@
-import { ApolloServer } from 'apollo-server-micro';
-import { db } from '../../backend/db';
+import { createServer } from '@graphql-yoga/node'
 import { schema } from '../../backend/schema';
 
-const apolloServer = new ApolloServer({ schema, context: { db } });
+const server = createServer({
+  schema,
+  endpoint: '/api/graphql',
+  // graphiql: false // uncomment to disable GraphiQL
+})
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-export default apolloServer.createHandler({ path: '/api/graphql' });
+export default server
