@@ -14,14 +14,10 @@ const TasksQueryDocument = gql`
 `;
 
 interface TasksQuery {
-  tasks: {
-    id: number;
-    title: string;
-    status: string;
-  }[]
+  tasks: { id: number; title: string; status: string }[];
 }
 
-const Home = () => {
+export default function Home() {
   const result = useQuery<TasksQuery>(TasksQueryDocument);
   const tasks = result.data?.tasks;
 
@@ -48,7 +44,7 @@ export const getStaticProps = async () => {
   const apolloClient = initializeApollo();
 
   await apolloClient.query<TasksQuery>({
-    query: TasksQueryDocument
+    query: TasksQueryDocument,
   });
 
   return {
@@ -57,5 +53,3 @@ export const getStaticProps = async () => {
     },
   };
 };
-
-export default Home;

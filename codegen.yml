@@ -6,4 +6,10 @@ generates:
     plugins:
       - "typescript"
       - "typescript-resolvers"
+    config:
+      useIndexSignature: true
+  ./generated/graphql-frontend.ts:
+    plugins:
+      - 'typescript'
       - "typescript-operations"
+      - "typescript-react-apollo"
