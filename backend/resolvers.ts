@@ -1,8 +1,30 @@
 import { Resolvers, TaskStatus } from "../generated/graphql-backend";
-import { Context, getTaskById, TasksDbQueryResult } from "../pages/api/graphql";
+import ServerlessMysql from 'serverless-mysql';
 import { OkPacket} from 'mysql';
-import { GraphQLYogaError } from "@graphql-yoga/node";
 import { GraphQLError } from "graphql";
+
+interface Context {
+  db: ServerlessMysql.ServerlessMysql
+}
+
+interface TaskDbRow {
+  id: number;
+  title: string;
+  task_status: TaskStatus
+}
+
+export type TasksDbQueryResult = TaskDbRow[];
+
+type TaskDbQueryResult = TaskDbRow[];
+
+const getTaskById = async (id: number, db: ServerlessMysql.ServerlessMysql) => {
+  const tasks = await db.query<TaskDbQueryResult>('SELECT * FROM tasks WHERE id=?', [id]);
+    return tasks.length ? {
+      id: tasks[0].id,
+      title: tasks[0].title,
+      status: tasks[0].task_status
+    } : null;
+}
 
 export const resolvers: Resolvers<Context>= {
     Query: {
@@ -17,7 +39,6 @@ export const resolvers: Resolvers<Context>= {
         const result = await context.db.query<TasksDbQueryResult>(
           query, queryParams
         );
-        console.log(result);
         await context.db.end();
         return result.map(({id, title, task_status}) => ({
           id,

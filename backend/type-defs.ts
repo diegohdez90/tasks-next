@@ -27,4 +27,4 @@ export const typeDefs = gql`
     updateTask(input: TaskInputUpdated!): Task
     deleteTask(id: Int!): Task
   }
-`
+`;
