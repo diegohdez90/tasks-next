@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import styles from '../styles/Home.module.css';
 import { initializeApollo } from '../lib/client';
 import { TasksDocument, TasksQuery, TaskStatus, useTasksQuery } from '../generated/graphql-frontend';
-import { List, ListItem, ListIcon, Spinner } from '@chakra-ui/react';
-import { MdCheckCircle,  } from 'react-icons/md';
+import { List, ListItem, ListIcon, Spinner, Container } from '@chakra-ui/react';
 import { BsCheckCircleFill, BsPencil } from 'react-icons/bs';
 
 export default function Home() {
@@ -11,11 +9,12 @@ export default function Home() {
   const tasks = result.data?.tasks;
 
   return (
-    <div className={styles.container}>
+    <>
       <Head>
         <title>Tasks</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+			<Container>
       {
         result.loading ? (
           <Spinner size='xl' />
@@ -27,7 +26,9 @@ export default function Home() {
           {tasks.map((task) => {
           return (
             <ListItem key={task.id}>
-              <ListIcon as={task.status === TaskStatus.Completed ? BsCheckCircleFill : BsPencil} />
+              <ListIcon
+								as={task.status === TaskStatus.Completed ? BsCheckCircleFill : BsPencil}
+								color={task.status === TaskStatus.Completed ? 'green.300' : 'blue.500'} />
               {task.title}
             </ListItem>
           );
@@ -35,7 +36,8 @@ export default function Home() {
         </List>
         : <p>No tasks added in your list</p>
       }
-    </div>
+			</Container>
+    </>
   );
 }
 
