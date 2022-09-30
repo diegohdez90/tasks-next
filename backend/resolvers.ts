@@ -53,7 +53,7 @@ export const resolvers: Resolvers<Context>= {
     Mutation: {
       async createTask(parent, args, context) {
         const { input } = args;
-        const result = await context.db.query<OkPacket>('INSERT INTO  tasks (title, task_status) VALUES (?, ?)', [
+        const result = await context.db.query<OkPacket>('INSERT INTO tasks (title, task_status) VALUES (?, ?)', [
           input.title,
           TaskStatus.Active
         ]);

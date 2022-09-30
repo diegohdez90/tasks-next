@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
-import merge from 'deepmerge';
 import { schema } from "./../backend/schema";
 
 type CustomApolloCache = any;
