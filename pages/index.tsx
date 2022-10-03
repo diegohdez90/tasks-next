@@ -18,7 +18,7 @@ export default function Home() {
 			<Container>
 				<Grid>
 					<GridItem w='100%'>
-						<CreateTask />
+						<CreateTask onSuccess={result.refetch} />
 					</GridItem>
 					<GridItem w='100%'>
 					{

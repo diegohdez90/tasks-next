@@ -1,4 +1,4 @@
-mutation CreateTask($input: TaskInput!) {
+mutation CreateTask($input: CreateTaskInput!) {
   createTask(input: $input) {
     id
     title

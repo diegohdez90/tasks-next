@@ -14,6 +14,10 @@ export type Scalars = {
   Float: number;
 };
 
+export type CreateTaskInput = {
+  title: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createTask?: Maybe<Task>;
@@ -23,7 +27,7 @@ export type Mutation = {
 
 
 export type MutationCreateTaskArgs = {
-  input: TaskInput;
+  input: CreateTaskInput;
 };
 
 
@@ -33,7 +37,7 @@ export type MutationDeleteTaskArgs = {
 
 
 export type MutationUpdateTaskArgs = {
-  input: TaskInputUpdated;
+  input: UpdateTaskInput;
 };
 
 export type Query = {
@@ -59,20 +63,16 @@ export type Task = {
   title: Scalars['String'];
 };
 
-export type TaskInput = {
-  title: Scalars['String'];
-};
-
-export type TaskInputUpdated = {
-  id: Scalars['Int'];
-  status?: InputMaybe<TaskStatus>;
-  title?: InputMaybe<Scalars['String']>;
-};
-
 export enum TaskStatus {
   Active = 'active',
   Completed = 'completed'
 }
+
+export type UpdateTaskInput = {
+  id: Scalars['Int'];
+  status?: InputMaybe<TaskStatus>;
+  title?: InputMaybe<Scalars['String']>;
+};
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
@@ -145,26 +145,26 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  CreateTaskInput: CreateTaskInput;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Task: ResolverTypeWrapper<Task>;
-  TaskInput: TaskInput;
-  TaskInputUpdated: TaskInputUpdated;
   TaskStatus: TaskStatus;
+  UpdateTaskInput: UpdateTaskInput;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
+  CreateTaskInput: CreateTaskInput;
   Int: Scalars['Int'];
   Mutation: {};
   Query: {};
   String: Scalars['String'];
   Task: Task;
-  TaskInput: TaskInput;
-  TaskInputUpdated: TaskInputUpdated;
+  UpdateTaskInput: UpdateTaskInput;
 }>;
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{

@@ -15,6 +15,10 @@ export type Scalars = {
   Float: number;
 };
 
+export type CreateTaskInput = {
+  title: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createTask?: Maybe<Task>;
@@ -24,7 +28,7 @@ export type Mutation = {
 
 
 export type MutationCreateTaskArgs = {
-  input: TaskInput;
+  input: CreateTaskInput;
 };
 
 
@@ -34,7 +38,7 @@ export type MutationDeleteTaskArgs = {
 
 
 export type MutationUpdateTaskArgs = {
-  input: TaskInputUpdated;
+  input: UpdateTaskInput;
 };
 
 export type Query = {
@@ -60,23 +64,19 @@ export type Task = {
   title: Scalars['String'];
 };
 
-export type TaskInput = {
-  title: Scalars['String'];
-};
-
-export type TaskInputUpdated = {
-  id: Scalars['Int'];
-  status?: InputMaybe<TaskStatus>;
-  title?: InputMaybe<Scalars['String']>;
-};
-
 export enum TaskStatus {
   Active = 'active',
   Completed = 'completed'
 }
 
+export type UpdateTaskInput = {
+  id: Scalars['Int'];
+  status?: InputMaybe<TaskStatus>;
+  title?: InputMaybe<Scalars['String']>;
+};
+
 export type CreateTaskMutationVariables = Exact<{
-  input: TaskInput;
+  input: CreateTaskInput;
 }>;
 
 
@@ -89,7 +89,7 @@ export type TasksQuery = { __typename?: 'Query', tasks: Array<{ __typename?: 'Ta
 
 
 export const CreateTaskDocument = gql`
-    mutation CreateTask($input: TaskInput!) {
+    mutation CreateTask($input: CreateTaskInput!) {
   createTask(input: $input) {
     id
     title
