@@ -1,9 +1,11 @@
 import Head from 'next/head';
 import { initializeApollo } from '../lib/client';
 import { TasksDocument, TasksQuery, TaskStatus, useTasksQuery } from '../generated/graphql-frontend';
-import { List, ListItem, ListIcon, Spinner, Container, Grid, GridItem } from '@chakra-ui/react';
-import { BsCheckCircleFill, BsPencil } from 'react-icons/bs';
+import { List, ListItem, ListIcon, Spinner, Container, Grid, GridItem, Icon } from '@chakra-ui/react';
+import { BsCheckCircleFill, BsPencil, BsLink } from 'react-icons/bs';
 import CreateTask from '../components/CreateTask';
+import React from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const result = useTasksQuery();
@@ -35,6 +37,11 @@ export default function Home() {
 									<ListIcon
 										as={task.status === TaskStatus.Completed ? BsCheckCircleFill : BsPencil}
 										color={task.status === TaskStatus.Completed ? 'green.300' : 'blue.500'} />
+										<Link href="/update/[id]" as={`/update/${task.id}`} style={{
+											cursor: 'pointer'
+										}}>
+											<Icon as={BsLink} color={'blackAlpha.600'} />
+										</Link>
 									{task.title}
 								</ListItem>
 							);
