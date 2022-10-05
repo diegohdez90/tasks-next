@@ -1,5 +1,16 @@
 
-import { Button, FormControl, FormErrorIcon, FormErrorMessage, FormLabel, Input, SimpleGrid } from "@chakra-ui/react";
+import {
+	Button,
+	FormControl,
+	FormErrorIcon,
+	FormErrorMessage,
+	FormLabel,
+	Input,
+	SimpleGrid,
+	Alert,
+	AlertIcon,
+	AlertDescription
+} from "@chakra-ui/react";
 import React, { useState } from "react";
 import { MdErrorOutline } from 'react-icons/md'
 import { FaSave } from 'react-icons/fa';
@@ -44,8 +55,21 @@ const CreateTask = ({
 			}			
 		}
 	}
-	
+
+	let errorMessage = '';
+	if(error) {
+		if (error.networkError) {
+			errorMessage = "A network error occurred"
+		} else {
+			errorMessage = error.graphQLErrors.toString();
+		}
+	}
+
 	return <SimpleGrid w='100%'>
+		{error && <Alert>
+			<AlertIcon />
+			<AlertDescription>{errorMessage}</AlertDescription>
+		</Alert>}
 		<form onSubmit={onSubmit}>
 			<FormControl isInvalid={errorTask}>
 				<FormLabel>Task</FormLabel>

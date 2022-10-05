@@ -4,13 +4,35 @@ import { TasksDocument, TasksQuery, TaskStatus, useTasksQuery } from '../generat
 import { List, ListItem, ListIcon, Spinner, Container, Grid, GridItem, Icon } from '@chakra-ui/react';
 import { BsCheckCircleFill, BsPencil, BsLink } from 'react-icons/bs';
 import CreateTask from '../components/CreateTask';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
   const result = useTasksQuery();
-  const tasks = result.data?.tasks;
+	const [data, setData] = useState<{
+    __typename?: "Task" | undefined;
+    id: number;
+    title: string;
+    status: TaskStatus;
+	}[]>();
 
+	useEffect(() => {
+		const tasks = result.data?.tasks as {
+			__typename?: "Task" | undefined;
+			id: number;
+			title: string;
+			status: TaskStatus;
+		}[];
+		console.log('result', result);
+		
+		console.log('data', data);
+		
+		setData(tasks);
+	}, []);
+	
+
+	console.log(data);
+	
   return (
     <>
       <Head>
@@ -28,10 +50,10 @@ export default function Home() {
 						<Spinner size='xl' />
 					) : result.error ? (
 						<p>Error</p>
-					) : tasks &&
-					tasks.length > 0 ?
+					) : data &&
+					data.length > 0 ?
 						<List>
-						{tasks.map((task) => {
+						{data.map((task) => {
 							return (
 								<ListItem key={task.id}>
 									<ListIcon

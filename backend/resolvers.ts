@@ -18,13 +18,19 @@ type TasksDbQueryResult = TaskDbRow[];
 type TaskDbQueryResult = TaskDbRow[];
 
 const getTaskById = async (id: number, db: ServerlessMysql) => {
-  const tasks = await db.query<TaskDbQueryResult>('SELECT * FROM tasks WHERE id=?', [id]);
-    return tasks.length ? {
-      id: tasks[0].id,
-      title: tasks[0].title,
-      status: tasks[0].task_status
-    } : null;
-}
+  const tasks = await db.query<TaskDbQueryResult>(
+    'SELECT id, title, task_status FROM tasks WHERE id = ?',
+    [id]
+  );
+
+  return tasks.length
+    ? {
+        id: tasks[0].id,
+        title: tasks[0].title,
+        status: tasks[0].task_status,
+      }
+    : null;
+};
 
 export const resolvers: Resolvers<ApolloContext> = {
   Query: {
@@ -41,11 +47,13 @@ export const resolvers: Resolvers<ApolloContext> = {
         queryParams
       );
       await context.db.end();
-      return tasks.map(({ id, title, task_status }) => ({
+      const data = tasks.map(({ id, title, task_status }) => ({
         id,
         title,
         status: task_status,
       }));
+			console.log('data', data);
+			return data;
     },
     async task(parent, args, context) {
       return await getTaskById(args.id, context.db);
