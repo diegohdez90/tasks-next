@@ -1,13 +1,13 @@
 import Head from 'next/head';
 import { initializeApollo } from '../lib/client';
 import { TasksDocument, TasksQuery, TaskStatus, useTasksQuery } from '../generated/graphql-frontend';
-import { List, ListItem, ListIcon, Spinner, Container, Grid, GridItem, Icon } from '@chakra-ui/react';
-import { BsCheckCircleFill, BsPencil, BsLink } from 'react-icons/bs';
+import { Spinner, Container, Grid, GridItem } from '@chakra-ui/react';
 import CreateTask from '../components/CreateTask';
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import TaskList from '../components/TaskList';
 
 export default function Home() {
+
   const result = useTasksQuery();
 	const [data, setData] = useState<{
     __typename?: "Task" | undefined;
@@ -28,11 +28,8 @@ export default function Home() {
 		console.log('data', data);
 		
 		setData(tasks);
-	}, []);
-	
+	}, []);	
 
-	console.log(data);
-	
   return (
     <>
       <Head>
@@ -52,23 +49,7 @@ export default function Home() {
 						<p>Error</p>
 					) : data &&
 					data.length > 0 ?
-						<List>
-						{data.map((task) => {
-							return (
-								<ListItem key={task.id}>
-									<ListIcon
-										as={task.status === TaskStatus.Completed ? BsCheckCircleFill : BsPencil}
-										color={task.status === TaskStatus.Completed ? 'green.300' : 'blue.500'} />
-										<Link href="/update/[id]" as={`/update/${task.id}`} style={{
-											cursor: 'pointer'
-										}}>
-											<Icon as={BsLink} color={'blackAlpha.600'} />
-										</Link>
-									{task.title}
-								</ListItem>
-							);
-						})}
-						</List>
+						<TaskList list={data} />
 						: <p>No tasks added in your list</p>
 					}
 					</GridItem>
