@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { schema } from "./../backend/schema";
 import merge from 'deepmerge';
-
+import isEqual from 'lodash/isEqual';
 
 type CustomApolloCache = any;
 let apolloClient: ApolloClient<CustomApolloCache> | undefined;
@@ -40,10 +40,18 @@ export function initializeApollo(initialState: CustomApolloCache | null = null) 
   // gets hydrated here
   if (initialState) {
     // Get existing cache, loaded during client side data fetching
-    const existingCache = _apolloClient.extract()
+		const existingCache = _apolloClient.extract()
 
-    // Merge the existing cache into data passed from getStaticProps/getServerSideProps
-    const data = merge(initialState, existingCache)
+    // Merge the initialState from getStaticProps/getServerSideProps in the existing cache
+    const data = merge(existingCache, initialState, {
+      // combine arrays using object equality (like in sets)
+      arrayMerge: (destinationArray, sourceArray) => [
+        ...sourceArray,
+        ...destinationArray.filter((d) =>
+          sourceArray.every((s) => !isEqual(d, s))
+        ),
+      ],
+    })
 
     // Restore the cache with the merged data
     _apolloClient.cache.restore(data)
