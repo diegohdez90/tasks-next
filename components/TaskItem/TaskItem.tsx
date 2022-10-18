@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { Task, TaskStatus, useDeleteTaskMutation } from '../../generated/graphql-frontend';
-import { ListItem, ListIcon, Flex, Icon, IconButton } from '@chakra-ui/react';
+import { Task, TaskStatus, useDeleteTaskMutation, useUpdateTaskMutation } from '../../generated/graphql-frontend';
+import { ListItem, ListIcon, Icon, IconButton, Checkbox } from '@chakra-ui/react';
 import { BsCheckCircleFill, BsPencil, BsLink, BsFillXCircleFill } from 'react-icons/bs';
 import Link from 'next/link';
 import { Reference } from '@apollo/client';
@@ -53,8 +53,37 @@ const TaskItem = ({
 		}
 	}
 
+	const [updateTask, {
+		loading: updateTaskLoading,
+		error: updateTaskError
+	}] = useUpdateTaskMutation({
+		errorPolicy: 'all'
+	});
+	const onClickCompleteTask = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const status = e.target.checked ? TaskStatus.Completed : TaskStatus.Active;
+		updateTask({
+			variables: {
+				input: {
+					id: task.id,
+					status: status
+				}
+			}
+		})
+	}
+
+	useEffect(() => {
+		if(updateTaskError) {
+			alert('An error occurred on update task');
+		}
+	}, [updateTaskError])
+
 	return (
 		<ListItem display='flex' flexDirection='row' alignContent='center' >
+			<Checkbox
+				checked={task.status === TaskStatus.Completed}
+				onChange={onClickCompleteTask}
+				disabled={updateTaskLoading}
+			/>
 				<ListIcon
 					as={task.status === TaskStatus.Completed ? BsCheckCircleFill : BsPencil}
 					color={task.status === TaskStatus.Completed ? 'green.300' : 'blue.500'} />
