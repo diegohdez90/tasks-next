@@ -6,7 +6,7 @@ import CreateTask from '../components/CreateTask';
 import React, { useEffect, useRef, useState } from 'react';
 import TaskList from '../components/TaskList';
 import { useRouter } from 'next/router';
-import Error from 'next/error';
+import Page404 from './404';
 import { GetServerSideProps } from 'next';
 import Filter from '../components/Filter';
 
@@ -14,9 +14,10 @@ const isTaskStatus = (value: string): value is TaskStatus => Object.values(TaskS
 
 export default function Home() {
 	const router = useRouter();
-	const status = typeof router.query.status === 'string' ? router.query.status : undefined;
+	const status = 
+		Array.isArray(router.query.status) && router.query.status.length ? router.query.status[0] : undefined;
 	if (status !== undefined && !isTaskStatus(status)) {
-		return <Error statusCode={404} />
+		return <Page404 />
 	}
   const prevStatus = useRef(status);
 	useEffect(() => {
